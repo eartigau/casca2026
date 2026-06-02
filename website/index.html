@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CASCA 2026 – Oral Schedule</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top-bar">
+    <div class="brand">
+      <span class="brand-title" data-i18n-en="CASCA 2026 – Oral Schedule" data-i18n-fr="CASCA 2026 – Horaire des exposés oraux"></span>
+      <span class="brand-sub" data-i18n-en="Choose your sessions" data-i18n-fr="Choisissez vos séances"></span>
+    </div>
+    <div class="controls">
+      <button id="lang-en" class="lang-btn active" data-lang="en">English</button>
+      <button id="lang-fr" class="lang-btn" data-lang="fr">Français</button>
+    </div>
+  </header>
+
+  <main id="app">
+    <div class="view-tabs">
+      <button id="view-oral" class="view-btn active" data-view="oral" data-i18n-en="Oral schedule" data-i18n-fr="Horaire des exposés oraux"></button>
+      <button id="view-posters" class="view-btn" data-view="posters" data-i18n-en="Posters" data-i18n-fr="Affiches"></button>
+      <button id="view-participants" class="view-btn" data-view="participants" data-i18n-en="Participants" data-i18n-fr="Participants"></button>
+    </div>
+
+    <section id="oral-view">
+      <div id="loading" class="status" data-i18n-en="Loading schedule…" data-i18n-fr="Chargement de l'horaire…"></div>
+      <div id="error" class="status status-error" hidden></div>
+      <div id="mobile-note" class="status status-note" data-i18n-en="Tip: tap a talk to open its abstract." data-i18n-fr="Astuce : touchez un exposé pour ouvrir son résumé."></div>
+      <section id="qr-section" class="qr-section" hidden>
+        <div class="qr-title-row">
+          <h2 class="qr-title" data-i18n-en="QR Codes by Session" data-i18n-fr="Codes QR par séance"></h2>
+          <a class="qr-print-link" href="print_qr.html" target="_blank" rel="noopener" data-i18n-en="Printable 8.5 x 11" data-i18n-fr="Version imprimable 8,5 x 11"></a>
+        </div>
+        <div id="session-qr"></div>
+      </section>
+      <div id="schedule"></div>
+    </section>
+
+    <section id="poster-view" hidden>
+      <div id="poster-loading" class="status" data-i18n-en="Loading posters…" data-i18n-fr="Chargement des affiches…"></div>
+      <div id="poster-error" class="status status-error" hidden></div>
+      <div id="posters"></div>
+    </section>
+
+    <section id="participant-view" hidden>
+      <div id="participant-loading" class="status" data-i18n-en="Loading participants…" data-i18n-fr="Chargement des participants…"></div>
+      <div id="participants"></div>
+    </section>
+  </main>
+
+  <template id="session-template">
+    <section class="session">
+      <h2 class="session-header">
+        <span class="session-day"></span>
+        <span class="session-period"></span>
+      </h2>
+      <div class="session-rooms"></div>
+    </section>
+  </template>
+
+  <template id="room-template">
+    <article class="room-card">
+      <header class="room-header">
+        <div class="room-title"></div>
+        <div class="room-theme"></div>
+        <div class="room-invited" hidden></div>
+      </header>
+      <div class="room-body"></div>
+    </article>
+  </template>
+
+  <template id="talk-template">
+    <div class="talk" role="button" tabindex="0">
+      <div class="talk-main">
+        <div class="talk-slot"></div>
+        <div class="talk-summary">
+          <div class="talk-title"><a class="talk-title-link" href="#"></a></div>
+          <div class="talk-speaker"></div>
+        </div>
+        <div class="talk-toggle">+</div>
+      </div>
+      <div class="talk-details" hidden>
+        <div class="talk-details-nav">
+          <div class="talk-abstract-label"></div>
+          <a class="talk-back-link" href="#"></a>
+        </div>
+        <div class="talk-field"></div>
+        <div class="talk-abstract"></div>
+      </div>
+    </div>
+  </template>
+
+  <template id="poster-template">
+    <div class="poster" role="button" tabindex="0">
+      <div class="poster-main">
+        <div class="poster-summary">
+          <div class="poster-title"><a class="poster-title-link" href="#"></a></div>
+          <div class="poster-speaker"></div>
+        </div>
+        <div class="poster-toggle">+</div>
+      </div>
+      <div class="poster-details" hidden>
+        <div class="poster-details-nav">
+          <div class="poster-abstract-label"></div>
+          <a class="poster-back-link" href="#"></a>
+        </div>
+        <div class="poster-field"></div>
+        <div class="poster-grade"></div>
+        <div class="poster-abstract"></div>
+      </div>
+    </div>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>

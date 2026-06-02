@@ -1,0 +1,483 @@
+% !TEX program = lualatex
+\documentclass[12pt,letterpaper]{report}
+
+\usepackage[margin=1in]{geometry}
+%\usepackage{fontspec}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{parskip}
+\IfFileExists{lipsum.sty}{%
+  \usepackage{lipsum}
+}{%
+  \NewDocumentCommand{\lipsum}{ O{} O{} }{%
+    \placeholder{Placeholder text pending final program copy.}
+  }%
+}
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+
+% Highlight placeholders that need to be filled
+\newcommand{\placeholder}[1]{\colorbox{yellow!60}{#1}}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{hhline}
+\IfFileExists{ragged2e.sty}{\usepackage{ragged2e}}{}
+\IfFileExists{needspace.sty}{\usepackage{needspace}}{}
+\usepackage{multicol}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\IfFileExists{eso-pic.sty}{\usepackage{eso-pic}}{}
+\IfFileExists{pdfpages.sty}{\usepackage{pdfpages}}{}
+\IfFileExists{pdflscape.sty}{\usepackage{pdflscape}}{\usepackage{lscape}}
+\IfFileExists{pdflscape.sty}{\usepackage{pdflscape}}{\usepackage{lscape}}
+
+
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=MidnightBlue,
+  urlcolor=RoyalBlue,
+  pdftitle={CASCA 2026 Conference Program},
+  pdfauthor={CASCA 2026 Organizing Team}
+}
+
+\definecolor{cascablue}{HTML}{123A63}
+\definecolor{cascateal}{HTML}{2F7D8C}
+\definecolor{cascagold}{HTML}{C28A3A}
+\definecolor{cascadeep}{HTML}{0F172A}
+\definecolor{paperwarm}{HTML}{F7F4EC}
+\definecolor{lightrule}{HTML}{D7DEE7}
+\definecolor{softpanel}{HTML}{EEF4F5}
+\definecolor{nightbg}{HTML}{07111F}
+\definecolor{nightpanel}{HTML}{10243A}
+\definecolor{starlight}{HTML}{F8F4E8}
+\definecolor{nebulablue}{HTML}{1E476E}
+\definecolor{nebulateal}{HTML}{2D7C8B}
+\definecolor{auroraglow}{HTML}{5FA8B8}
+\definecolor{deepviolet}{HTML}{1A2741}
+\definecolor{nebulaedge}{HTML}{DDECF2}
+\definecolor{tuesdaybg}{HTML}{311A2B}
+\definecolor{tuesdayaccent}{HTML}{F28A64}
+\definecolor{tuesdayglow}{HTML}{F6C177}
+\definecolor{wednesdaybg}{HTML}{102E35}
+\definecolor{wednesdayaccent}{HTML}{63C7BE}
+\definecolor{wednesdayglow}{HTML}{C6F3EE}
+\definecolor{thursdaybg}{HTML}{1B2346}
+\definecolor{thursdayaccent}{HTML}{90A7FF}
+\definecolor{thursdayglow}{HTML}{F0D08F}
+
+\setstretch{1.03}
+\setlength{\parindent}{0pt}
+\setlength{\LTpre}{0.8em}
+\setlength{\LTpost}{0.4em}
+\renewcommand{\arraystretch}{1.15}
+\arrayrulecolor{lightrule}
+\rowcolors{2}{softpanel!75!white}{white}
+
+\IfFileExists{ragged2e.sty}{%
+  \newcommand{\TableRaggedRight}{\RaggedRight}%
+}{%
+  \newcommand{\TableRaggedRight}{\raggedright}%
+}
+
+%\IfFileExists{needspace.sty}{  \newcommand{\TopicNeedSpace}[1]{\Needspace{#1}}}{  \newcommand{\TopicNeedSpace}[1]{}}
+
+\makeatletter
+\def\chaptermark#1{\markboth{#1}{}}
+\def\sectionmark#1{\markright{#1}}
+\renewcommand\thesection{\arabic{section}}
+\renewcommand\thesubsection{\thesection.\arabic{subsection}}
+\renewcommand\section{\@startsection{section}{1}{\z@}{-3.25ex \@plus -1ex \@minus -.2ex}{1.1ex \@plus .2ex}{\normalfont\Large\sffamily\bfseries\color{cascablue}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}{-2.4ex \@plus -1ex \@minus -.2ex}{0.7ex \@plus .15ex}{\normalfont\large\sffamily\bfseries\color{cascateal}}}
+\newcommand{\chaptertitlepanel}[1]{%
+  \noindent\fcolorbox{nebulablue}{nightpanel}{%
+    \begin{minipage}{0.95\textwidth}
+      \vspace{0.25em}%
+      {\sffamily\bfseries\Huge\color{starlight} #1\par}
+      \vspace{0.35em}%
+      {\color{auroraglow}\rule{0.28\textwidth}{1.2pt}}%
+      \vspace{0.25em}%
+    \end{minipage}%
+  }%
+}
+
+\def\@makechapterhead#1{%
+  \vspace*{1.2em}%
+  {\parindent\z@\raggedright\normalfont
+    {\color{cascagold}\sffamily\bfseries\large \@chapapp\space \thechapter\par}
+    \vspace{0.4em}%
+    {\color{deepviolet}\rule{\textwidth}{1.2pt}\par}
+    \vspace{0.85em}%
+    {\chaptertitlepanel{#1}\par}
+    \vspace{1.35em}%
+  }}
+\def\@makeschapterhead#1{%
+  \vspace*{1.2em}%
+  {\parindent\z@\raggedright\normalfont
+    {\color{deepviolet}\rule{\textwidth}{1.2pt}\par}
+    \vspace{0.85em}%
+    {\chaptertitlepanel{#1}\par}
+    \vspace{1.15em}%
+  }}
+\makeatother
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\IfFileExists{assets/casca2026-banner-light.png}{\includegraphics[height=18.8pt]{assets/casca2026-banner-light.png}}{\sffamily\small\color{cascablue} CASCA 2026}}
+\fancyhead[R]{\sffamily\small\color{cascadeep}\nouppercase{\leftmark}}
+\fancyfoot[L]{\sffamily\small\color{cascateal} Conference Program \textcolor{auroraglow}{.}}
+\fancyfoot[C]{\IfFileExists{assets/Symbole_carré-UdeM.png}{\includegraphics[height=16pt]{assets/Symbole_carré-UdeM.png}}{}}
+\fancyfoot[R]{\sffamily\small\color{cascadeep}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{25pt}
+
+\newcommand{\coverpanel}[1]{%
+  \noindent\fcolorbox{auroraglow}{nightpanel}{%
+    \begin{minipage}{0.92\textwidth}
+      \setlength{\parskip}{0.5em}
+      \color{starlight}
+      #1
+    \end{minipage}%
+  }%
+}
+
+\newcommand{\astrodivider}{%
+  {\color{auroraglow}\rule{0.34\textwidth}{1.6pt}}%
+}
+
+\makeatletter
+\newcommand{\daysetpalette}[1]{%
+  \def\daybg{nightpanel}%
+  \def\dayaccent{auroraglow}%
+  \def\dayglow{cascagold}%
+  \def\daytagline{}%
+  \def\@dayarg{#1}%
+  \def\@daytue{Tuesday}\def\@daywed{Wednesday}\def\@daythu{Thursday}%
+  \ifx\@dayarg\@daytue
+    \def\daybg{tuesdaybg}%
+    \def\dayaccent{tuesdayaccent}%
+    \def\dayglow{tuesdayglow}%
+    \def\daytagline{June 9, 2026}%
+  \fi
+  \ifx\@dayarg\@daywed
+    \def\daybg{wednesdaybg}%
+    \def\dayaccent{wednesdayaccent}%
+    \def\dayglow{wednesdayglow}%
+    \def\daytagline{June 10, 2026}%
+  \fi
+  \ifx\@dayarg\@daythu
+    \def\daybg{thursdaybg}%
+    \def\dayaccent{thursdayaccent}%
+    \def\dayglow{thursdayglow}%
+    \def\daytagline{June 11, 2026}%
+  \fi
+}
+\makeatother
+
+\newcommand{\daypalettebanner}[1]{%
+  \begingroup
+  \daysetpalette{#1}%
+  \noindent\fcolorbox{\dayaccent}{\daybg}{%
+    \begin{minipage}{0.96\textwidth}
+      \vspace{0.2em}%
+      {\sffamily\bfseries\Large\color{starlight} #1\par}
+      \vspace{0.15em}%
+      {\sffamily\itshape\small\color{\dayglow} \daytagline\par}
+      \vspace{0.35em}%
+      {\color{\dayaccent}\rule{0.28\textwidth}{1.15pt}\par}
+      \vspace{0.1em}%
+    \end{minipage}%
+  }%
+  \par\vspace{0.95em}%
+  \endgroup
+}
+
+\newcommand{\starfield}{%
+  \begingroup
+  \setlength{\unitlength}{1pt}%
+  \begin{picture}(0,0)
+    \put(18,-24){\color{starlight}\circle*{2.8}}
+    \put(70,-58){\color{cascagold}\circle*{2.1}}
+    \put(132,-36){\color{starlight}\circle*{2.4}}
+    \put(208,-72){\color{nebulateal}\circle*{3.2}}
+    \put(304,-26){\color{starlight}\circle*{2.8}}
+    \put(394,-64){\color{cascagold}\circle*{2.1}}
+    \put(462,-34){\color{starlight}\circle*{2.4}}
+    \put(36,-146){\color{nebulablue}\circle*{34}}
+    \put(452,-172){\color{nebulateal}\circle*{26}}
+    \put(44,-510){\color{nebulateal}\circle*{18}}
+    \put(468,-540){\color{nebulablue}\circle*{30}}
+    \put(82,-676){\color{starlight}\circle*{2.8}}
+    \put(238,-708){\color{cascagold}\circle*{2.8}}
+    \put(428,-692){\color{starlight}\circle*{2.4}}
+  \end{picture}%
+  \endgroup
+}
+
+\newcommand{\insideastrocorner}{%
+  \begingroup
+  \setlength{\unitlength}{1pt}%
+  \begin{picture}(0,0)
+    \put(476,-18){\color{nebulaedge!62}\circle*{112}}
+    \put(528,-34){\color{auroraglow!46}\circle*{168}}
+    \put(590,-108){\color{nebulateal!34}\circle*{228}}
+    \put(552,-154){\color{nebulablue!24}\circle*{292}}
+    \put(438,-26){\color{starlight!85}\circle*{2.0}}
+    \put(470,-92){\color{starlight!72}\circle*{1.4}}
+    \put(506,-48){\color{cascagold!88}\circle*{2.2}}
+    \put(534,-124){\color{auroraglow!82}\circle*{1.7}}
+    \put(562,-68){\color{starlight!78}\circle*{1.9}}
+    \put(592,-142){\color{cascagold!72}\circle*{1.3}}
+    \put(610,-54){\color{starlight!74}\circle*{1.5}}
+    \put(634,-116){\color{auroraglow!70}\circle*{1.2}}
+  \end{picture}%
+  \endgroup
+}
+
+\newcommand{\insideastrolowerleft}{%
+  \begingroup
+  \setlength{\unitlength}{1pt}%
+  \begin{picture}(0,0)
+    \put(10,8){\color{nebulablue!24}\circle*{250}}
+    \put(52,28){\color{nebulateal!30}\circle*{176}}
+    \put(20,66){\color{auroraglow!38}\circle*{118}}
+    \put(86,16){\color{nebulaedge!36}\circle*{90}}
+    \put(26,22){\color{starlight!82}\circle*{1.8}}
+    \put(48,74){\color{cascagold!78}\circle*{1.5}}
+    \put(72,38){\color{starlight!72}\circle*{1.3}}
+    \put(96,92){\color{auroraglow!74}\circle*{1.7}}
+    \put(118,28){\color{starlight!76}\circle*{1.4}}
+    \put(140,66){\color{cascagold!82}\circle*{1.9}}
+    \put(152,14){\color{starlight!70}\circle*{1.2}}
+  \end{picture}%
+  \endgroup
+}
+
+\newcommand{\enableinsideastrobackground}{%
+  \AddToShipoutPictureBG{%
+    \AtPageUpperLeft{\insideastrocorner}%
+    \AtPageLowerLeft{\insideastrolowerleft}%
+  }%
+}
+
+% Sponsor badge: #1=image path, #2=minipage width (proportional to logo AR).
+% The image fills 96% of the column so all logos in a row share the same height.
+\newcommand{\sponsorbadge}[2]{%
+  \IfFileExists{#1}{%
+    \begin{minipage}[c]{#2}%
+      \centering
+      \includegraphics[width=0.96\linewidth,keepaspectratio]{#1}%
+    \end{minipage}%
+  }{}%
+}
+
+% Dark-background variant for logos with white/light artwork (inverted logos)
+\newcommand{\sponsorbadgedark}[2]{%
+  \IfFileExists{#1}{%
+    \begin{minipage}[c]{#2}%
+      \centering
+      {\setlength{\fboxsep}{4pt}%
+       \colorbox{nightbg}{%
+         \includegraphics[width=\dimexpr\linewidth-8pt\relax,keepaspectratio]{#1}%
+       }}%
+    \end{minipage}%
+  }{}%
+}
+
+% Column widths are proportional to each logo's aspect ratio (w/h) so that
+% every logo in a row renders at the same height (~56 pt).  Rows whose total
+% AR-fill is well below 1 are centred with leading/trailing \hfill.
+\newcommand{\coversponsors}{%
+  \vspace{0.45em}
+  % Row 1: udem (AR 2.45) · iREx (AR 2.25) · planetarium (AR 2.06) — wide, centred
+  \hfill
+  \sponsorbadge{assets/sponsors/udem.png}{0.293\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/iREx2_RGB-bilingue.png}{0.269\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/planetarium_logo.png}{0.247\textwidth}%
+  \hfill\par
+  \vspace{0.5em}
+  % Row 2: dunlap (AR 6.28) — wide, centred alone (CFHT/RASC moved to square row)
+  \hfill\sponsorbadge{assets/sponsors/dunlap.png}{0.752\textwidth}\hfill\par
+  \vspace{0.5em}
+  % Row 3: gemini (AR 3.65) · keck (AR 2.03) · frq (AR 2.61) — wide, fills full width
+  % (candiapl/club moved to square row; frq moved here from row 5)
+  \sponsorbadge{assets/sponsors/gemini.png}{0.437\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/keck.png}{0.243\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/frq.png}{0.312\textwidth}\par
+  \vspace{0.5em}
+  % Row 4: faaq (AR 2.77) · bishops (AR 2.83) · ABB (AR 2.52) — wide, fills full width
+  \sponsorbadge{assets/sponsors/faaq.png}{0.332\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/bishops.png}{0.338\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/ABB.png}{0.302\textwidth}\par
+  \vspace{0.5em}
+  % Row 5: honeywell (AR 5.49) — wide, centred alone
+  \hfill\sponsorbadge{assets/sponsors/honeywell.png}{0.657\textwidth}\hfill\par
+  \vspace{0.5em}
+  % Row 6: ALL square logos (AR < 1.5) at 1.66× standard height — fraction = AR × 0.1989
+  % CFHT (AR 1.00) · RASC (AR 1.00) · candiapl (AR 0.99) · club (AR 1.00) — centred, fill 79%
+  \hfill
+  \sponsorbadge{assets/sponsors/CFHT.png}{0.199\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/RASC.png}{0.199\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/candiapl.png}{0.197\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/club_tremblant.png}{0.199\textwidth}%
+  \hfill\par
+  \vspace{0.5em}
+  % Row 7: tsi_inverted (AR 4.57, wide) · sidrat_inverted (AR 0.93, square at 1.66×) — white bg
+  % sidrat at 1.66× height: AR×0.1989 = 0.185 (light badge uses 0.96 factor)
+  \hfill
+  \sponsorbadge{assets/sponsors/tsi_inverted.png}{0.547\textwidth}\hfill
+  \sponsorbadge{assets/sponsors/sidrat_inverted.png}{0.185\textwidth}%
+  \hfill
+}
+
+\newcommand{\programchapter}[1]{%
+  \clearpage
+  \chapter*{#1}%
+  \markboth{#1}{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+\newcommand{\programdayheader}[1]{%
+  \clearpage
+  \markboth{#1}{#1}%
+  \addcontentsline{toc}{chapter}{#1}%
+}
+
+\newcommand{\programdividerpage}[1]{%
+  \clearpage
+  \addcontentsline{toc}{chapter}{#1}%
+  \markboth{#1}{#1}%
+  {%
+    \pagecolor{nightbg}%
+    \thispagestyle{empty}%
+    \color{starlight}%
+    \starfield
+    \vspace*{0.18\textheight}%
+    \begin{center}
+      {\sffamily\bfseries\large\color{cascagold} CASCA 2026\par}
+      \vspace{1.1cm}
+      {\color{auroraglow}\rule{0.48\textwidth}{1.2pt}\par}
+      \vspace{1.0cm}
+      {\sffamily\bfseries\fontsize{28}{34}\selectfont\color{starlight} #1\par}
+      \vspace{1.0cm}
+      {\color{auroraglow}\rule{0.34\textwidth}{1.2pt}\par}
+    \end{center}
+    \vfill
+    \null
+    \clearpage
+    \nopagecolor
+  }%
+}
+
+\begin{document}
+
+\hypersetup{pageanchor=false}
+\begin{titlepage}
+  \thispagestyle{empty}
+  \pagecolor{nightbg}
+  \color{starlight}
+  \starfield
+  \vspace*{0.25\textheight}
+  \begin{center}
+    \IfFileExists{assets/casca2026-banner-light.png}{%
+      \includegraphics[width=\textwidth]{assets/casca2026-banner-light.png}\par
+      \vspace{0.85cm}
+    }{\IfFileExists{assets/casca-header1020.png}{%
+      \includegraphics[width=0.72\textwidth]{assets/casca-header1020.png}\par
+      \vspace{0.9cm}
+    }{}
+    }
+    {\Large\sffamily\bfseries\color{starlight} Conference program\par}
+    \vspace{0.22cm}
+    {\large\itshape\color{cascagold} MIL-ion Futures of Astrophysics\par}
+    \vspace{1.2cm}
+    \IfFileExists{assets/Symbole_carré-UdeM.png}{%
+      \includegraphics[width=3.2cm]{assets/Symbole_carré-UdeM.png}%
+    }{}
+  \end{center}
+  \vfill
+\end{titlepage}
+
+\begin{titlepage}
+  \thispagestyle{empty}
+  \pagecolor{white}
+  \color{black}
+  \vspace*{0.03\textheight}
+
+  \begin{center}
+    \resizebox{\textwidth}{!}{\bfseries\color{cascagold}With thanks to our partners and supporters}\par
+    \vspace{0.3cm}
+    \coversponsors
+  \end{center}
+
+  \vfill
+\end{titlepage}
+\nopagecolor
+\hypersetup{pageanchor=true}
+
+% Conference block schedule — pre-built PDFs from schedule_1avril.xlsx
+% (no \clearpage needed: \includepdf starts its own pages, and \clearpage would
+%  flush the empty page left open by \end{titlepage}'s internal \newpage)
+\includepdf[pages=-,fitpaper=true]{assets/block-en.pdf}
+\includepdf[pages=-,fitpaper=true]{assets/block-fr.pdf}
+
+\enableinsideastrobackground
+
+\pagenumbering{roman}
+\hypertarget{nav-overview}{}
+\input{sections/generated_schedule_overview}
+% Emit TOC entries directly, skipping the \chapter* that would add a blank page
+\clearpage
+{\noindent\color{deepviolet}\rule{\textwidth}{1.2pt}\par\vspace{0.6em}}
+{\sffamily\bfseries\Large\color{cascablue} Table of Contents\par}
+\vspace{0.8em}
+\makeatletter\@starttoc{toc}\makeatother
+\clearpage
+
+\input{sections/loc}
+\input{sections/soc}
+\input{sections/generated_participants}
+\include{sections/land_acknowledgement}
+\input{sections/code_of_conduct_en}
+\input{sections/code_of_conduct_fr}
+\hypertarget{nav-practical}{}\label{nav-page-practical}
+\input{sections/practical_information}
+
+\clearpage
+\pagenumbering{arabic}
+
+\hypertarget{nav-oral-schedule}{}\label{nav-page-oral-schedule}
+\programdividerpage{Conference Schedule}
+\input{sections/generated_final_schedule}
+\input{sections/generated_schedule}
+
+\hypertarget{nav-poster-schedule}{}\label{nav-page-poster-schedule}
+\programdividerpage{Poster Schedule}
+\input{sections/generated_posters_schedule}
+
+\hypertarget{nav-prized}{}\label{nav-page-prized}
+\programchapter{Prize Talks}
+\input{sections/generated_prized}
+
+\hypertarget{nav-invited}{}\label{nav-page-invited}
+\programchapter{Invited Speakers}
+\input{sections/generated_invited}
+
+\hypertarget{nav-abstracts}{}\label{nav-page-abstracts}
+\programdividerpage{List of Abstracts (Contributed Talks)}
+\input{sections/generated_abstracts}
+
+\hypertarget{nav-poster-abstracts}{}\label{nav-page-poster-abstracts}
+\programdividerpage{Poster Abstracts}
+\input{sections/generated_posters_abstracts}
+
+%\hypertarget{nav-title-index}{}\label{nav-page-title-index}
+%\programchapter{Talk \& Poster Index by Topic}
+%\input{sections/generated_title_index}
+
+\end{document}
