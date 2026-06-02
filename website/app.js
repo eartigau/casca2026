@@ -53,7 +53,7 @@
 
   async function loadMeta() {
     try {
-      const res = await fetch('meta.json');
+      const res = await fetch('meta.json', {cache:'no-cache'});
       if (res.ok) state.meta = await res.json();
     } catch (_) {}
     renderMeta();
@@ -362,13 +362,13 @@
             rInv.setAttribute('tabindex', '0');
             rInv.style.cursor = 'pointer';
 
-            function toggleInv() {
+            const toggleInv = () => {
               const exp = !rInv.classList.contains('expanded');
               rInv.classList.toggle('expanded', exp);
               invDetails.hidden = !exp;
               const tog = rInv.querySelector('.invited-toggle');
               if (tog) tog.textContent = exp ? '–' : '+';
-            }
+            };
             rInv.addEventListener('click', toggleInv);
             rInv.addEventListener('keydown', (e) => {
               if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleInv(); }
@@ -590,7 +590,7 @@
 
   async function loadOral() {
     try {
-      const res = await fetch('schedule.json');
+      const res = await fetch('schedule.json', {cache:'no-cache'});
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       state.data = data;
@@ -610,7 +610,7 @@
 
   async function loadPosters() {
     try {
-      const res = await fetch('posters.json');
+      const res = await fetch('posters.json', {cache:'no-cache'});
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const data = await res.json();
       state.posters = data;
@@ -776,7 +776,7 @@
     const needsPosters = !state.postersLoaded;
     if (needsPosters) {
       try {
-        const res = await fetch('posters.json');
+        const res = await fetch('posters.json', {cache:'no-cache'});
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         state.posters = data;
@@ -787,7 +787,7 @@
     }
     if (!state.participantsJsonLoaded) {
       try {
-        const res = await fetch('participants.json');
+        const res = await fetch('participants.json', {cache:'no-cache'});
         if (res.ok) {
           state.allParticipants = await res.json();
           state.participantsJsonLoaded = true;
