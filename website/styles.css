@@ -607,3 +607,9 @@ html, body {
 .participant-badge-poster:hover {
   background: #a7f3d0;
 }
+
+.update-time {
+  font-size: 0.78rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0.5rem;
+}

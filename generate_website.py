@@ -18,6 +18,7 @@ Writes: website/schedule.json
 import json
 import re
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ─── Paths ────────────────────────────────────────────────────────────────────
@@ -630,6 +631,34 @@ def parse_poster_abstracts(path: Path, lookup: dict | None = None) -> list[dict]
     return posters
 
 
+# ─── Full participants parser ─────────────────────────────────────────────────
+
+def parse_participants_full(path: Path) -> list[dict]:
+    """
+    Parse generated_participants.tex → list of ALL participants.
+    Returns [{first, last, institution}] sorted by last name.
+    """
+    try:
+        text = path.read_text(encoding='utf-8')
+    except FileNotFoundError:
+        return []
+
+    participants = []
+    # \textbf{LastName, FirstName}, {\footnotesize\textit{Institution}}\par
+    pattern = re.compile(
+        r'\\textbf\{([^,}]+),\s*([^}]+)\}'   # group 1=last, group 2=first
+        r'(?:[^{]*\{[^}]*\\textit\{([^}]*)\})?'  # group 3=institution (optional)
+    )
+    for m in pattern.finditer(text):
+        last        = clean_latex(m.group(1)).strip()
+        first       = clean_latex(m.group(2)).strip()
+        institution = clean_latex(m.group(3)).strip() if m.group(3) else ''
+        if last or first:
+            participants.append({'first': first, 'last': last, 'institution': institution})
+
+    return participants
+
+
 # ─── JSON builder ─────────────────────────────────────────────────────────────
 
 def build_schedule_json(sessions: list[dict], abstracts: dict,
@@ -714,6 +743,22 @@ def main():
         encoding='utf-8',
     )
     print(f'  → {posters_path}')
+
+    print('Parsing full participants list…')
+    all_participants = parse_participants_full(SECTIONS / 'generated_participants.tex')
+    print(f'  {len(all_participants)} participants loaded.')
+
+    participants_path = OUT / 'participants.json'
+    participants_path.write_text(
+        json.dumps(all_participants, ensure_ascii=False, indent=2),
+        encoding='utf-8',
+    )
+    print(f'  → {participants_path}')
+
+    print('Writing meta.json…')
+    meta = {'generated_at': datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')}
+    (OUT / 'meta.json').write_text(json.dumps(meta, indent=2), encoding='utf-8')
+    print(f'  generated_at: {meta["generated_at"]}')
 
     print('Done.')
 

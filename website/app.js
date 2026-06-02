@@ -5,6 +5,9 @@
     posters: [],
     postersLoaded: false,
     participantsLoaded: false,
+    allParticipants: [],       // full list from participants.json
+    participantsJsonLoaded: false,
+    meta: null,                // from meta.json
     setView: null,        // set by initViewTabs, used by participant links
     filteredPeriod: null, // null = show all, 'AM', or 'PM'
     filteredDay: null,    // null = show all, or day slug like 'Thursday'
@@ -32,9 +35,28 @@
       btn.classList.toggle('active', btn.getAttribute('data-lang') === lang);
     });
 
+    renderMeta();
     renderSchedule();
     renderPosters();
     if (state.participantsLoaded) renderParticipants();
+  }
+
+  function renderMeta() {
+    const el = document.getElementById('update-time');
+    if (!el || !state.meta || !state.meta.generated_at) return;
+    const d = new Date(state.meta.generated_at);
+    const opts = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const locale = state.lang === 'fr' ? 'fr-CA' : 'en-CA';
+    const label = state.lang === 'fr' ? 'Mis à jour : ' : 'Updated: ';
+    el.textContent = label + d.toLocaleString(locale, opts);
+  }
+
+  async function loadMeta() {
+    try {
+      const res = await fetch('meta.json');
+      if (res.ok) state.meta = await res.json();
+    } catch (_) {}
+    renderMeta();
   }
 
   function parseTheme(theme) {
@@ -540,15 +562,24 @@
   function buildParticipants() {
     const map = new Map();
 
-    function getOrCreate(first, last) {
-      const key = `${(last || '').toLowerCase()}|||${(first || '').toLowerCase()}`;
-      if (!map.has(key)) {
-        map.set(key, { first: (first || '').trim(), last: (last || '').trim(), talks: [], posters: [] });
-      }
-      return map.get(key);
+    function key(first, last) {
+      return `${(last || '').toLowerCase()}|||${(first || '').toLowerCase()}`;
     }
 
-    // From oral schedule
+    function getOrCreate(first, last) {
+      const k = key(first, last);
+      if (!map.has(k)) {
+        map.set(k, { first: (first || '').trim(), last: (last || '').trim(), talks: [], posters: [] });
+      }
+      return map.get(k);
+    }
+
+    // Start with the full registered participants list (participants.json)
+    state.allParticipants.forEach((p) => {
+      getOrCreate(p.first, p.last);
+    });
+
+    // Add talk links from oral schedule
     state.data.forEach((session) => {
       session.rooms.forEach((room) => {
         if (room.invited_speaker) {
@@ -556,7 +587,7 @@
           if (parts.length >= 2) {
             const last = parts[parts.length - 1];
             const first = parts.slice(0, -1).join(' ');
-            getOrCreate(first, last); // just register presence, no link id
+            getOrCreate(first, last);
           } else if (parts.length === 1) {
             getOrCreate('', parts[0]);
           }
@@ -570,7 +601,7 @@
       });
     });
 
-    // From posters
+    // Add poster links
     state.posters.forEach((poster) => {
       if (poster.first || poster.last) {
         const p = getOrCreate(poster.first, poster.last);
@@ -685,6 +716,17 @@
         console.error('Failed to load posters for participants:', err);
       }
     }
+    if (!state.participantsJsonLoaded) {
+      try {
+        const res = await fetch('participants.json');
+        if (res.ok) {
+          state.allParticipants = await res.json();
+          state.participantsJsonLoaded = true;
+        }
+      } catch (err) {
+        console.error('Failed to load participants.json:', err);
+      }
+    }
     if (loadingEl) loadingEl.hidden = true;
     state.participantsLoaded = true;
     renderParticipants();
@@ -693,6 +735,7 @@
   initLanguageToggle();
   initViewTabs();
   setLanguage('en');
+  loadMeta();
   loadOral();
   window.addEventListener('hashchange', () => {
     parseHashToFilteredPeriod();
