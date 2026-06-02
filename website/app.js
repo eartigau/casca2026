@@ -301,11 +301,80 @@
 
         if (room.invited_speaker) {
           const min = room.invited_minutes || 30;
-          const title = room.invited_title ? `: ${room.invited_title}` : '';
-          const label = state.lang === 'fr'
-            ? `Conférencier·ère invité·e : ${room.invited_speaker}${title} (${min} min)`
-            : `Invited speaker: ${room.invited_speaker}${title} (${min} min)`;
-          rInv.textContent = label;
+          const hasDetails = room.invited_bio || room.invited_abstract;
+          const fr = state.lang === 'fr';
+
+          // Header row
+          const invHeader = document.createElement('div');
+          invHeader.className = 'invited-header';
+
+          const invLabel = document.createElement('span');
+          invLabel.className = 'invited-label';
+          invLabel.textContent = fr
+            ? `Conférencier·ère invité·e : ${room.invited_speaker} (${min} min)`
+            : `Invited speaker: ${room.invited_speaker} (${min} min)`;
+          invHeader.appendChild(invLabel);
+
+          if (hasDetails) {
+            const invToggle = document.createElement('span');
+            invToggle.className = 'invited-toggle';
+            invToggle.textContent = '+';
+            invHeader.appendChild(invToggle);
+          }
+          rInv.appendChild(invHeader);
+
+          if (hasDetails) {
+            const invDetails = document.createElement('div');
+            invDetails.className = 'invited-details';
+            invDetails.hidden = true;
+
+            if (room.invited_title) {
+              const tEl = document.createElement('div');
+              tEl.className = 'invited-talk-title';
+              tEl.textContent = room.invited_title;
+              invDetails.appendChild(tEl);
+            }
+
+            if (room.invited_bio) {
+              const lbl = document.createElement('div');
+              lbl.className = 'invited-section-label';
+              lbl.textContent = fr ? 'Biographie' : 'Biography';
+              invDetails.appendChild(lbl);
+              const bioEl = document.createElement('div');
+              bioEl.className = 'invited-bio';
+              bioEl.textContent = room.invited_bio;
+              invDetails.appendChild(bioEl);
+            }
+
+            if (room.invited_abstract) {
+              const lbl = document.createElement('div');
+              lbl.className = 'invited-section-label';
+              lbl.textContent = fr ? 'Résumé' : 'Abstract';
+              invDetails.appendChild(lbl);
+              const absEl = document.createElement('div');
+              absEl.className = 'invited-abstract';
+              absEl.textContent = room.invited_abstract;
+              invDetails.appendChild(absEl);
+            }
+
+            rInv.appendChild(invDetails);
+            rInv.setAttribute('role', 'button');
+            rInv.setAttribute('tabindex', '0');
+            rInv.style.cursor = 'pointer';
+
+            function toggleInv() {
+              const exp = !rInv.classList.contains('expanded');
+              rInv.classList.toggle('expanded', exp);
+              invDetails.hidden = !exp;
+              const tog = rInv.querySelector('.invited-toggle');
+              if (tog) tog.textContent = exp ? '–' : '+';
+            }
+            rInv.addEventListener('click', toggleInv);
+            rInv.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleInv(); }
+            });
+          }
+
           rInv.hidden = false;
         } else {
           rInv.hidden = true;

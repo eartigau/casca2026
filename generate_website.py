@@ -631,6 +631,70 @@ def parse_poster_abstracts(path: Path, lookup: dict | None = None) -> list[dict]
     return posters
 
 
+# ─── Invited speaker bio/abstract parser ─────────────────────────────────────
+
+def parse_invited_speakers(*paths: Path) -> dict:
+    """
+    Parse generated_invited.tex (and optionally generated_prized.tex).
+    Returns {speaker_name_lower: {title, bio, abstract}}.
+    """
+    result: dict = {}
+
+    for path in paths:
+        try:
+            text = path.read_text(encoding='utf-8')
+        except FileNotFoundError:
+            continue
+
+        chunks = re.split(r'(?=\\hypertarget\{invited-)', text)
+
+        for chunk in chunks:
+            if '\\hypertarget{invited-' not in chunk:
+                continue
+
+            # Speaker name from \section{...}
+            name_m = re.search(r'\\section\{([^}]+)\}', chunk)
+            if not name_m:
+                continue
+            raw_name = clean_latex(name_m.group(1)).strip()
+            # Prize entries look like "Plaskett Medal : Alan Knee" — take name after colon
+            colon_m = re.match(r'^[^:]+:\s*(.+)$', raw_name)
+            name_key = colon_m.group(1).strip().lower() if colon_m else raw_name.lower()
+
+            # Biography: everything between \paragraph{Biography} and \paragraph{Abstract}
+            bio = ''
+            bio_m = re.search(
+                r'\\paragraph\{Biography\}(.*?)(?=\\paragraph\{Abstract\}|\Z)',
+                chunk, re.DOTALL,
+            )
+            if bio_m:
+                bio = re.sub(r'\s+', ' ', clean_latex(bio_m.group(1))).strip()
+
+            # Abstract: title (first paragraph if short/noun-phrase) + body
+            title = ''
+            abstract = ''
+            abs_m = re.search(r'\\paragraph\{Abstract\}(.*?)$', chunk, re.DOTALL)
+            if abs_m:
+                raw = clean_latex(abs_m.group(1)).strip()
+                paragraphs = [re.sub(r'\s+', ' ', p).strip()
+                              for p in re.split(r'\n{2,}', raw) if p.strip()]
+                if paragraphs:
+                    first = paragraphs[0]
+                    # Only treat first paragraph as a title if it looks like one:
+                    # ≤20 words and no "sentence break" (period + space + capital)
+                    if (len(first.split()) <= 20
+                            and not re.search(r'\.\s+[A-Z]', first)):
+                        title = first
+                        abstract = ' '.join(paragraphs[1:]).strip()
+                    else:
+                        abstract = ' '.join(paragraphs).strip()
+
+            if name_key and (title or bio or abstract):
+                result[name_key] = {'title': title, 'bio': bio, 'abstract': abstract}
+
+    return result
+
+
 # ─── Full participants parser ─────────────────────────────────────────────────
 
 def parse_participants_full(path: Path) -> list[dict]:
@@ -662,12 +726,18 @@ def parse_participants_full(path: Path) -> list[dict]:
 # ─── JSON builder ─────────────────────────────────────────────────────────────
 
 def build_schedule_json(sessions: list[dict], abstracts: dict,
-                        lookup: dict | None = None) -> list[dict]:
+                        lookup: dict | None = None,
+                        invited: dict | None = None) -> list[dict]:
     """Merge skeleton sessions with abstract data → final schedule.json format."""
     result = []
     for session in sessions:
         rooms_out = []
         for room in session['rooms']:
+            # Invited speaker bio/abstract lookup
+            inv: dict = {}
+            if invited and room['invited_speaker']:
+                inv = invited.get(room['invited_speaker'].lower(), {})
+
             talks_out = []
             for t in room['talks']:
                 tid = t['_id']
@@ -688,12 +758,14 @@ def build_schedule_json(sessions: list[dict], abstracts: dict,
                     'field':    info.get('field', ''),
                 })
             rooms_out.append({
-                'room':            room['room'],
-                'theme':           room['theme'],
-                'invited_speaker': room['invited_speaker'],
-                'invited_title':   room['invited_title'],
-                'invited_minutes': room['invited_minutes'],
-                'talks':           talks_out,
+                'room':             room['room'],
+                'theme':            room['theme'],
+                'invited_speaker':  room['invited_speaker'],
+                'invited_title':    inv.get('title') or None,
+                'invited_bio':      inv.get('bio') or None,
+                'invited_abstract': inv.get('abstract') or None,
+                'invited_minutes':  room['invited_minutes'],
+                'talks':            talks_out,
             })
         result.append({
             'day':    session['day'],
@@ -724,8 +796,15 @@ def main():
     abstracts = parse_abstracts(SECTIONS / 'generated_abstracts.tex', lookup)
     print(f'  {len(abstracts)} abstracts loaded.')
 
+    print('Parsing invited speaker bios/abstracts…')
+    invited = parse_invited_speakers(
+        SECTIONS / 'generated_invited.tex',
+        SECTIONS / 'generated_prized.tex',
+    )
+    print(f'  {len(invited)} invited speaker entries loaded.')
+
     print('Building schedule.json…')
-    schedule_data = build_schedule_json(sessions, abstracts, lookup)
+    schedule_data = build_schedule_json(sessions, abstracts, lookup, invited)
     schedule_path = OUT / 'schedule.json'
     schedule_path.write_text(
         json.dumps(schedule_data, ensure_ascii=False, indent=2),
