@@ -2,6 +2,8 @@
 """
 generate_website.py — Regenerate CASCA 2026 website JSON files from Overleaf LaTeX.
 
+
+
 Usage:
     python3 generate_website.py
 
